@@ -8,6 +8,7 @@ namespace GKProj2
 {
     public static class ColorConverter
     {
+        // test comment for commit
         public static NormalizedColor RGBToStandarized(Color color)
         {
             double r = color.R / 255.0;

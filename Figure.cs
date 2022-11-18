@@ -40,21 +40,21 @@ namespace GKProj2
 
             Id = _idProvider++;
         }
-        public void Draw(Bitmap canvas, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
+        public void Draw(LockBitmap canvas, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
         {
             FillTriangle(canvas, color,vecInterpolation,lightPosition, lightColor,m,kd,ks, r3interpolation);
-            if (drawNet)
-            {
-                foreach (Edge e in edgeList)
-                {
-                    e.Draw(canvas);
-                }
-            }
+            //if (drawNet)
+            //{
+            //    foreach (Edge e in edgeList)
+            //    {
+            //        e.Draw(canvas);
+            //    }
+            //}
 
-            using (Graphics g = Graphics.FromImage(canvas))
-            {
-                g.FillEllipse(Brushes.Red, (float)lightPosition.DispX - 5, (float)lightPosition.DispY - 5, 10, 10);
-            }
+            //using (Graphics g = Graphics.FromImage(canvas))
+            //{
+            //    g.FillEllipse(Brushes.Red, (float)lightPosition.DispX - 5, (float)lightPosition.DispY - 5, 10, 10);
+            //}
         }
         private Vector InterpolateNormVector(Point3D point, bool r3)
         {
@@ -106,7 +106,6 @@ namespace GKProj2
             //TriangleInterpolator interpolator = new TriangleInterpolator(vertList[0].ToDispPoint3D(), vertList[1].ToDispPoint3D(), vertList[2].ToDispPoint3D(), new Point3D(px, py), false);
             //return interpolator.Interpolate(vertList[0].DispZ, vertList[1].DispZ, vertList[2].DispZ);
         }
-        
         public (double minY,double MaxY) GetDispYRange()
         {
             double minY = vertList[0].DispY;
@@ -118,7 +117,6 @@ namespace GKProj2
             }
             return(minY,maxY);
         }
-
         public void CalcVertColors(Vert lightPosition, double m, double kd, double ks, Color sphereColor, Color lightColor)
         {
             foreach(Vert v in vertList)
@@ -136,8 +134,7 @@ namespace GKProj2
                 v.Color = finalColor;
             }
         }
-
-        public void FillTriangle(Bitmap canvas, Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3)
+        public void FillTriangle(LockBitmap canvas, Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3)
         {
             // calculating colors for interpolation
             if (!vecInterpolation)
@@ -169,8 +166,7 @@ namespace GKProj2
                 activeEdges.RemoveAll(e => e.Slope == null);
             }
         }
-
-        private void FillScanline(Bitmap canvas, List<Edge> activeEdges, int y,
+        private void FillScanline(LockBitmap canvas, List<Edge> activeEdges, int y,
             Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor,double m,
             double kd, double ks, bool r3)
         {
@@ -214,7 +210,6 @@ namespace GKProj2
                 i += 2;
             }
         }
-
         public List<Edge>[] InitEdgeTable(int yMin, int yMax)
         {
             // init ET
@@ -228,7 +223,6 @@ namespace GKProj2
             }
             return edgeTable;
         }
-
         public Color GetFinalColor(Edge? simplifier, Point3D point, Vert lightPosition, double m, double kd, double ks, Color sphereColor, Color lightColor, bool vecInterpolation, bool r3)
         {
             NormalizedColor finalColor;

@@ -8,20 +8,10 @@ using System.Xml.Linq;
 
 namespace GKProj2
 {
-    //public struct DrawingArgs
-    //{
-    //    public Bitmap canvas;
-    //    public int m;
-    //    public double ks, kd;
-    //    public Vert lightSource;
-    //    public Color sphereColor;
-    //    public Color lightColor;
-
-    //    public DrawingArgs(Bitmap canvas)
-    //}
     public partial class Form1 : Form
     {
-        private Bitmap canvas;
+        private Bitmap canvasBmp;
+        private LockBitmap canvas;
         private List<Figure> figureList = new List<Figure>();
         //private const int MARGIN = 20;
         private double ks, kd, m;
@@ -47,12 +37,18 @@ namespace GKProj2
             // LIGHT ON TOP OF THE SPHERE
             lightPosition = new Vert(0, 0, lightZBar.Value / 10, new Vector(0, 0, 0));
 
-            canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            pictureBox.Image = canvas;
-            using (Graphics g = Graphics.FromImage(canvas))
+
+            canvasBmp = new Bitmap(pictureBox.Width, pictureBox.Height);
+            using (Graphics g = Graphics.FromImage(canvasBmp))
             {
                 g.Clear(Color.White);
             }
+            pictureBox.Image = canvasBmp;
+            canvas = new LockBitmap(canvasBmp);
+            RenderParameters.height = canvas.Height;
+            RenderParameters.width = canvas.Width;
+
+
             figureList = new List<Figure>();
             ImportObjFile("C:\\VS Projects\\GKProj2\\hemisphereAVG.obj");
 
@@ -65,23 +61,22 @@ namespace GKProj2
             //    new Vert(0.5,0,0, new Vector(0, 0, 1)),
             //    new Vert(0.5, 0.5, 0,  new Vector(0, 0, 1)),
             //    new Vert(-0.5,-0.3,0,  new Vector(0, 0, 1)) }));
-
-            RenderParameters.height = canvas.Height;
-            RenderParameters.width = canvas.Width;
             DrawAll();
         }
 
         public void DrawAll()
         {
-            using(Graphics g = Graphics.FromImage(canvas))
+            using(Graphics g = Graphics.FromImage(canvasBmp))
             {
                 g.Clear(Color.White);
             }
 
+            canvas.LockBits();
             foreach (Figure f in figureList)
             {
                 f.Draw(canvas, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition,lightColor,m,kd,ks,r3interpolation);
             }
+            canvas.UnlockBits();
             //figureList[3].Draw(canvas, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition);
             pictureBox.Refresh();
         }
@@ -195,8 +190,13 @@ namespace GKProj2
 
         private void pictureBox_SizeChanged(object sender, EventArgs e)
         {
-            canvas = new Bitmap(pictureBox.Size.Width, pictureBox.Size.Height);
-            pictureBox.Image = canvas;
+            canvasBmp = new Bitmap(pictureBox.Width, pictureBox.Height);
+            using (Graphics g = Graphics.FromImage(canvasBmp))
+            {
+                g.Clear(Color.White);
+            }
+            pictureBox.Image = canvasBmp;
+            canvas = new LockBitmap(canvasBmp);
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
             DrawAll();

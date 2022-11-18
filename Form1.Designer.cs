@@ -33,6 +33,8 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.colorBox = new System.Windows.Forms.GroupBox();
+            this.textureShowButton = new System.Windows.Forms.Button();
+            this.sphereTextureButton = new System.Windows.Forms.Button();
             this.netCheckBox = new System.Windows.Forms.CheckBox();
             this.colorShowButton = new System.Windows.Forms.Button();
             this.textureRadioButton = new System.Windows.Forms.RadioButton();
@@ -127,7 +129,7 @@
             this.tableLayoutPanel2.Location = new System.Drawing.Point(979, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 175F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -136,6 +138,8 @@
             // 
             // colorBox
             // 
+            this.colorBox.Controls.Add(this.textureShowButton);
+            this.colorBox.Controls.Add(this.sphereTextureButton);
             this.colorBox.Controls.Add(this.netCheckBox);
             this.colorBox.Controls.Add(this.colorShowButton);
             this.colorBox.Controls.Add(this.textureRadioButton);
@@ -144,10 +148,30 @@
             this.colorBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorBox.Location = new System.Drawing.Point(3, 3);
             this.colorBox.Name = "colorBox";
-            this.colorBox.Size = new System.Drawing.Size(232, 122);
+            this.colorBox.Size = new System.Drawing.Size(232, 169);
             this.colorBox.TabIndex = 1;
             this.colorBox.TabStop = false;
             this.colorBox.Text = "Sphere color";
+            // 
+            // textureShowButton
+            // 
+            this.textureShowButton.Enabled = false;
+            this.textureShowButton.Location = new System.Drawing.Point(165, 116);
+            this.textureShowButton.Name = "textureShowButton";
+            this.textureShowButton.Size = new System.Drawing.Size(33, 31);
+            this.textureShowButton.TabIndex = 6;
+            this.textureShowButton.UseVisualStyleBackColor = true;
+            // 
+            // sphereTextureButton
+            // 
+            this.sphereTextureButton.Enabled = false;
+            this.sphereTextureButton.Location = new System.Drawing.Point(32, 116);
+            this.sphereTextureButton.Name = "sphereTextureButton";
+            this.sphereTextureButton.Size = new System.Drawing.Size(127, 31);
+            this.sphereTextureButton.TabIndex = 5;
+            this.sphereTextureButton.Text = "Sphere Texture";
+            this.sphereTextureButton.UseVisualStyleBackColor = true;
+            this.sphereTextureButton.Click += new System.EventHandler(this.sphereTextureButton_Click);
             // 
             // netCheckBox
             // 
@@ -163,7 +187,7 @@
             // colorShowButton
             // 
             this.colorShowButton.Enabled = false;
-            this.colorShowButton.Location = new System.Drawing.Point(167, 79);
+            this.colorShowButton.Location = new System.Drawing.Point(165, 81);
             this.colorShowButton.Name = "colorShowButton";
             this.colorShowButton.Size = new System.Drawing.Size(33, 31);
             this.colorShowButton.TabIndex = 3;
@@ -190,12 +214,13 @@
             this.chooseColorRadioButton.TabStop = true;
             this.chooseColorRadioButton.Text = "chosen color";
             this.chooseColorRadioButton.UseVisualStyleBackColor = true;
+            this.chooseColorRadioButton.CheckedChanged += new System.EventHandler(this.chooseColorRadioButton_CheckedChanged);
             // 
             // sphereColorButton
             // 
-            this.sphereColorButton.Location = new System.Drawing.Point(33, 79);
+            this.sphereColorButton.Location = new System.Drawing.Point(32, 81);
             this.sphereColorButton.Name = "sphereColorButton";
-            this.sphereColorButton.Size = new System.Drawing.Size(128, 31);
+            this.sphereColorButton.Size = new System.Drawing.Size(127, 31);
             this.sphereColorButton.TabIndex = 0;
             this.sphereColorButton.Text = "Sphere Color";
             this.sphereColorButton.UseVisualStyleBackColor = true;
@@ -221,7 +246,7 @@
             this.lightGroupBox.Controls.Add(this.label1);
             this.lightGroupBox.Controls.Add(this.kdBar);
             this.lightGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lightGroupBox.Location = new System.Drawing.Point(3, 131);
+            this.lightGroupBox.Location = new System.Drawing.Point(3, 178);
             this.lightGroupBox.Name = "lightGroupBox";
             this.lightGroupBox.Size = new System.Drawing.Size(232, 193);
             this.lightGroupBox.TabIndex = 2;
@@ -287,7 +312,7 @@
             // 
             // lightColorButton
             // 
-            this.lightColorButton.Location = new System.Drawing.Point(33, 147);
+            this.lightColorButton.Location = new System.Drawing.Point(31, 147);
             this.lightColorButton.Name = "lightColorButton";
             this.lightColorButton.Size = new System.Drawing.Size(128, 31);
             this.lightColorButton.TabIndex = 10;
@@ -400,7 +425,7 @@
             this.animationGroupBox.Controls.Add(this.label13);
             this.animationGroupBox.Controls.Add(this.lightZBar);
             this.animationGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.animationGroupBox.Location = new System.Drawing.Point(3, 330);
+            this.animationGroupBox.Location = new System.Drawing.Point(3, 377);
             this.animationGroupBox.Name = "animationGroupBox";
             this.animationGroupBox.Size = new System.Drawing.Size(232, 80);
             this.animationGroupBox.TabIndex = 3;
@@ -472,7 +497,7 @@
             this.interpolationBox.Controls.Add(this.groupBox2);
             this.interpolationBox.Controls.Add(this.groupBox1);
             this.interpolationBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.interpolationBox.Location = new System.Drawing.Point(3, 416);
+            this.interpolationBox.Location = new System.Drawing.Point(3, 463);
             this.interpolationBox.Name = "interpolationBox";
             this.interpolationBox.Size = new System.Drawing.Size(232, 205);
             this.interpolationBox.TabIndex = 4;
@@ -626,5 +651,7 @@
         private RadioButton r2RadioButton;
         private GroupBox groupBox1;
         private System.Windows.Forms.Timer timer1;
+        private Button textureShowButton;
+        private Button sphereTextureButton;
     }
 }

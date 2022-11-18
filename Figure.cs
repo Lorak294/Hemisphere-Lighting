@@ -50,7 +50,7 @@ namespace GKProj2
                 e.Draw(canvas);
             }
         }
-        public void FillTriangle(LockBitmap lockBitmap)
+        public void FillTriangle(LockBitmap lockBitmapCanvas)
         {
             // calculating colors for interpolation
             if (!DrawingArgs.vecInterpolation)
@@ -77,12 +77,12 @@ namespace GKProj2
                 // remove all edges which are not horizontal (to avoid situation with two edges with same drawingX)
                 activeEdges.RemoveAll(e => e.Slope != null && (int)e.YDispMax == yIdx + yMin);
 
-                FillScanline(lockBitmap, activeEdges, yIdx + yMin);
+                FillScanline(lockBitmapCanvas, activeEdges, yIdx + yMin);
                 // remove all edges which will be unused in next iteration
                 activeEdges.RemoveAll(e => e.Slope == null);
             }
         }
-        private void FillScanline(LockBitmap lockBitmap, List<Edge> activeEdges, int y)
+        private void FillScanline(LockBitmap lockBitmapCanvas, List<Edge> activeEdges, int y)
         {
             Color finalColor;
             int i = 0;
@@ -93,7 +93,7 @@ namespace GKProj2
                 {
                     double z = CalcZofDispPoint(x, y);
                     finalColor = GetFinalColor(activeEdges[i], new Point3D(x, y, z));
-                    lockBitmap.SetPixel(x, y, finalColor);
+                    lockBitmapCanvas.SetPixel(x, y, finalColor);
                 }
                 i++;
             }
@@ -103,7 +103,7 @@ namespace GKProj2
                 // set first pixel which is on activeEdges[i]
                 int xBeg = (int)Math.Round(activeEdges[i].CurrentDrawingX);
                 finalColor = GetFinalColor(activeEdges[i], new Point3D(xBeg, y, CalcZofDispPoint(xBeg, y)));
-                lockBitmap.SetPixel(xBeg, y, finalColor);
+                lockBitmapCanvas.SetPixel(xBeg, y, finalColor);
 
                 //set pixels inbetween edges
                 xBeg++;
@@ -111,11 +111,11 @@ namespace GKProj2
                 for (int x = xBeg; x < xEnd; x++)
                 {
                     finalColor = GetFinalColor(null, new Point3D(x, y, CalcZofDispPoint(x, y)));
-                    lockBitmap.SetPixel(x, y, finalColor);
+                    lockBitmapCanvas.SetPixel(x, y, finalColor);
                 }
                 // set last pixel which is on activeEdges[i+1]
                 finalColor = GetFinalColor(activeEdges[i + 1], new Point3D(xEnd, y, CalcZofDispPoint(xEnd, y)));
-                lockBitmap.SetPixel(xEnd, y, finalColor);
+                lockBitmapCanvas.SetPixel(xEnd, y, finalColor);
 
                 // update x-es for the edges
                 activeEdges[i].CurrentDrawingX += activeEdges[i].Slope!.Value;
@@ -199,7 +199,7 @@ namespace GKProj2
                     lightVector,
                     new Vector(0, 0, 1),
                     DrawingArgs.m, DrawingArgs.kd, DrawingArgs.ks,
-                    ColorConverter.RGBToStandarized(DrawingArgs.sphereColor),
+                    ColorConverter.RGBToStandarized(DrawingArgs.GetPixelColor(v.DispX,v.DispY)),
                     ColorConverter.RGBToStandarized(DrawingArgs.lightColor));
                 v.Color = finalColor;
             }
@@ -235,7 +235,7 @@ namespace GKProj2
                     lightVector,
                     new Vector(0, 0, 1),
                     DrawingArgs.m, DrawingArgs.kd, DrawingArgs.ks,
-                    ColorConverter.RGBToStandarized(DrawingArgs.sphereColor),
+                    ColorConverter.RGBToStandarized(DrawingArgs.GetPixelColor((int)point.x,(int)point.y)),
                     ColorConverter.RGBToStandarized(DrawingArgs.lightColor));
             }
             else

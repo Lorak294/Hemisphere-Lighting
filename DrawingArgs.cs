@@ -15,6 +15,21 @@ namespace GKProj2
         public static Color lightColor;
         public static bool vecInterpolation;
         public static bool r3;
+        public static bool textureDraw;
+        public static LockBitmap? textureLockBitmap;
+
+        public static Color GetPixelColor(int x, int y)
+        {
+            if (textureDraw && textureLockBitmap != null)
+            {
+                Point texturePixel = RenderParameters.GetSphereRealtivePixel(x, y);
+                return textureLockBitmap.GetPixel(texturePixel.X % textureLockBitmap.Width, texturePixel.Y % textureLockBitmap.Height);
+            }
+            else
+            {
+                return sphereColor;
+            }
+        }
     }
 
     public static class RenderParameters
@@ -35,6 +50,12 @@ namespace GKProj2
         {
             return new Point3D(px * SphereRadius + XMove, py * SphereRadius + YMove, pz * SphereRadius);
         }
+
+        public static Point GetSphereRealtivePixel(int x, int y)
+        {
+            return new Point(x-(XMove-(int)SphereRadius), y- (YMove - (int)SphereRadius));
+        }
+
     }
     public struct Point3D
     {

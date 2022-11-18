@@ -12,7 +12,9 @@ namespace GKProj2
     public partial class Form1 : Form
     {
         private Bitmap canvas;
-        private LockBitmap lockBitmap;
+        private Bitmap texture;
+        private LockBitmap lockBitmapCanvas;
+
         private List<Figure> figureList = new List<Figure>();
         private int elapsedTime = 0;
 
@@ -22,8 +24,22 @@ namespace GKProj2
 
             colorShowButton.BackColor = Color.White;
             lightColorShowButton.BackColor = Color.White;
-            
-            // LIGHT ON TOP OF THE SPHERE
+
+            canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
+            pictureBox.Image = canvas;
+            using (Graphics g = Graphics.FromImage(canvas))
+            {
+                g.Clear(Color.White);
+            }
+            lockBitmapCanvas = new LockBitmap(canvas);
+
+            texture = new Bitmap("../../../defaultTexture.png");
+            textureShowButton.BackgroundImage = texture;
+            using (Graphics g = Graphics.FromImage(textureShowButton.BackgroundImage))
+            {
+                g.DrawImage(textureShowButton.BackgroundImage, textureShowButton.DisplayRectangle);
+            }
+            DrawingArgs.textureLockBitmap = new LockBitmap(texture);
             DrawingArgs.lightPosition = new Vert(0, 0, lightZBar.Value / 10, new Vector(0, 0, 0));
             DrawingArgs.lightColor = Color.White;
             DrawingArgs.sphereColor = Color.White;
@@ -32,23 +48,14 @@ namespace GKProj2
             DrawingArgs.ks = (double)ksBar.Value / 100;
             DrawingArgs.r3 = r3RadioButton.Checked;
             DrawingArgs.vecInterpolation = vecIntRadioButton.Checked;
-
-
-
-            canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
-            pictureBox.Image = canvas;
-            using (Graphics g = Graphics.FromImage(canvas))
-            {
-                g.Clear(Color.White);
-            }
-            lockBitmap = new LockBitmap(canvas);
-            
-            figureList = new List<Figure>();
-            ImportObjFile("C:\\VS Projects\\GKProj2\\hemisphereAVG.obj");
-
+            DrawingArgs.textureDraw = textureRadioButton.Checked;
 
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
+
+            figureList = new List<Figure>();
+            ImportObjFile("../../../hemisphereAVG.obj");
+
             DrawAll();
         }
 
@@ -59,12 +66,14 @@ namespace GKProj2
             {
                 g.Clear(Color.White);
             }
-            lockBitmap.LockBits();
+            lockBitmapCanvas.LockBits();
+            DrawingArgs.textureLockBitmap!.LockBits();
             foreach (Figure f in figureList)
             {
-                f.FillTriangle(lockBitmap);
+                f.FillTriangle(lockBitmapCanvas);
             }
-            lockBitmap.UnlockBits();
+            DrawingArgs.textureLockBitmap!.UnlockBits();
+            lockBitmapCanvas.UnlockBits();
             if (netCheckBox.Checked)
             {
                 foreach(Figure f in figureList)
@@ -175,7 +184,6 @@ namespace GKProj2
 
             return new Figure(selectedVerts);
         }
-
         private void MoveLightSource()
         {
             (double sinT,double cosT) = Math.SinCos(elapsedTime);
@@ -184,12 +192,11 @@ namespace GKProj2
             DrawingArgs.lightPosition!.X = cosT * radius;
             DrawingArgs.lightPosition!.Y = sinT * radius;
         }
-
         private void pictureBox_SizeChanged(object sender, EventArgs e)
         {
             canvas = new Bitmap(pictureBox.Size.Width, pictureBox.Size.Height);
             pictureBox.Image = canvas;
-            lockBitmap = new LockBitmap(canvas);
+            lockBitmapCanvas = new LockBitmap(canvas);
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
             DrawAll();
@@ -211,45 +218,41 @@ namespace GKProj2
             }
             DrawAll();
         }
-
         private void netCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             DrawAll();
         }
-
         private void kdBar_Scroll(object sender, EventArgs e)
         {
             kdValueLabel.Text = ((double)kdBar.Value / 100).ToString();
             DrawingArgs.kd = (float)kdBar.Value / 100;
             DrawAll();
         }
-
         private void lightColorButton_Click(object sender, EventArgs e)
         {
-            ColorDialog MyDialog = new ColorDialog();
-            MyDialog.AllowFullOpen = false;
-            MyDialog.Color = Color.White;
-            if (MyDialog.ShowDialog() == DialogResult.OK)
+            using (ColorDialog MyDialog = new ColorDialog())
             {
-                DrawingArgs.lightColor = MyDialog.Color;
-                lightColorShowButton.BackColor = DrawingArgs.lightColor;
+                MyDialog.AllowFullOpen = false;
+                MyDialog.Color = Color.White;
+                if (MyDialog.ShowDialog() == DialogResult.OK)
+                {
+                    DrawingArgs.lightColor = MyDialog.Color;
+                    lightColorShowButton.BackColor = DrawingArgs.lightColor;
+                }
+                DrawAll();
             }
-            DrawAll();
         }
-
         private void vecIntRadioButton_CheckedChanged(object sender, EventArgs e)
         {
             DrawingArgs.vecInterpolation = vecIntRadioButton.Checked;
             DrawAll();
         }
-
         private void lightZBar_Scroll(object sender, EventArgs e)
         {
             lightZValueLabel.Text = ((double)lightZBar.Value / 10).ToString();
             DrawingArgs.lightPosition!.Z = (double)lightZBar.Value / 10;
             DrawAll();
         }
-
         private void timer1_Tick(object sender, EventArgs e)
         {
             elapsedTime += timer1.Interval/2;
@@ -257,7 +260,6 @@ namespace GKProj2
             MoveLightSource();
             DrawAll();
         }
-
         private void animationCheckBox_CheckedChanged(object sender, EventArgs e)
         {
             if (animationCheckBox.Checked)
@@ -265,24 +267,60 @@ namespace GKProj2
             else
                 timer1.Stop();
         }
-
         private void r2RadioButton_CheckedChanged(object sender, EventArgs e)
         {
             DrawingArgs.r3 = r3RadioButton.Checked;
             DrawAll();
         }
-
         private void mBar_Scroll(object sender, EventArgs e)
         {
             mValueLabel.Text = mBar.Value.ToString();
             DrawingArgs.m = mBar.Value;
             DrawAll();
         }
-
         private void ksBar_Scroll(object sender, EventArgs e)
         {
             ksValueLabel.Text = ((double)ksBar.Value / 100).ToString();
             DrawingArgs.ks = (double)ksBar.Value / 100;
+            DrawAll();
+        }
+        private void sphereTextureButton_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Title = "Select Texture";
+                dlg.Filter = "Image files |*.bmp;*.png";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    texture.Dispose();
+                    texture = new Bitmap(dlg.FileName);
+                    textureShowButton.BackgroundImage = texture;
+                    DrawingArgs.textureLockBitmap = new LockBitmap(texture);
+  
+                    using(Graphics g = Graphics.FromImage(textureShowButton.BackgroundImage))
+                    {
+                        g.DrawImage(textureShowButton.BackgroundImage, textureShowButton.DisplayRectangle);
+                    }
+                }
+            }
+            DrawAll();
+            
+        }
+        private void chooseColorRadioButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (chooseColorRadioButton.Checked)
+            {
+                sphereColorButton.Enabled = true;
+                sphereTextureButton.Enabled = false;
+                DrawingArgs.textureDraw = false;
+            }
+            else
+            {
+                sphereColorButton.Enabled = false;
+                sphereTextureButton.Enabled = true;
+                DrawingArgs.textureDraw = true;
+            }
             DrawAll();
         }
     }

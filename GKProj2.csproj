@@ -9,13 +9,12 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="proj2_sfera.obj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <EmbeddedResource Include="proj2_sfera.obj">
+    <None Update="defaultTexture.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </EmbeddedResource>
+    </None>
+    <None Update="hemisphereAVG.obj">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

@@ -53,18 +53,6 @@ namespace GKProj2
         public void DrawInside(LockBitmap lockBitmap, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
         {
             FillTriangle(lockBitmap, color,vecInterpolation,lightPosition, lightColor,m,kd,ks, r3interpolation);
-            //if (drawNet)
-            //{
-            //    foreach (Edge e in edgeList)
-            //    {
-            //        e.Draw(lockBitmap);
-            //    }
-            //}
-
-            //using (Graphics g = Graphics.FromImage(canvas))
-            //{
-            //    g.FillEllipse(Brushes.Red, (float)lightPosition.DispX - 5, (float)lightPosition.DispY - 5, 10, 10);
-            //}
         }
         private Vector InterpolateNormVector(Point3D point, bool r3)
         {

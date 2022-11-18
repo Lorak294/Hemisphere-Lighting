@@ -42,6 +42,7 @@ namespace GKProj2
         }
         
         
+        // ================================= DRAWING FUNCTIONS ================================================
         public void DrawOutline(Bitmap canvas)
         {
             foreach (Edge e in edgeList)
@@ -49,11 +50,82 @@ namespace GKProj2
                 e.Draw(canvas);
             }
         }
-
-        public void DrawInside(LockBitmap lockBitmap, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
+        public void FillTriangle(LockBitmap lockBitmap)
         {
-            FillTriangle(lockBitmap, color,vecInterpolation,lightPosition, lightColor,m,kd,ks, r3interpolation);
+            // calculating colors for interpolation
+            if (!DrawingArgs.vecInterpolation)
+                CalcVertColors();
+
+            // get Y range for itarating
+            var yDispRange = GetDispYRange();
+            int yMin = (int)yDispRange.minY;
+            int yMax = (int)yDispRange.MaxY;
+
+            // init ET
+            List<Edge>[] edgeTable = InitEdgeTable(yMin, yMax);
+            List<Edge> activeEdges = new List<Edge>();
+
+            for (int yIdx = 0; yIdx < yMax - yMin + 1; yIdx++)
+            {
+                if (edgeTable[yIdx].Count > 0)
+                {
+                    // adding new active edges
+                    activeEdges.AddRange(edgeTable[yIdx]);
+                }
+                activeEdges = activeEdges.OrderBy(e => e.Slope == null ? double.MinValue : e.CurrentDrawingX).ToList(); // sort and put horizontal edges in the front of the list
+
+                // remove all edges which are not horizontal (to avoid situation with two edges with same drawingX)
+                activeEdges.RemoveAll(e => e.Slope != null && (int)e.YDispMax == yIdx + yMin);
+
+                FillScanline(lockBitmap, activeEdges, yIdx + yMin);
+                // remove all edges which will be unused in next iteration
+                activeEdges.RemoveAll(e => e.Slope == null);
+            }
         }
+        private void FillScanline(LockBitmap lockBitmap, List<Edge> activeEdges, int y)
+        {
+            Color finalColor;
+            int i = 0;
+            // fill horizontal lines first
+            while (i < activeEdges.Count && activeEdges[i].Slope == null)
+            {
+                for (int x = activeEdges[i].XDispMin; x < activeEdges[i].XDispMax; x++)
+                {
+                    double z = CalcZofDispPoint(x, y);
+                    finalColor = GetFinalColor(activeEdges[i], new Point3D(x, y, z));
+                    lockBitmap.SetPixel(x, y, finalColor);
+                }
+                i++;
+            }
+            // fill spaces between pairs of edges
+            while (i < activeEdges.Count)
+            {
+                // set first pixel which is on activeEdges[i]
+                int xBeg = (int)Math.Round(activeEdges[i].CurrentDrawingX);
+                finalColor = GetFinalColor(activeEdges[i], new Point3D(xBeg, y, CalcZofDispPoint(xBeg, y)));
+                lockBitmap.SetPixel(xBeg, y, finalColor);
+
+                //set pixels inbetween edges
+                xBeg++;
+                int xEnd = (int)Math.Round(activeEdges[i + 1].CurrentDrawingX);
+                for (int x = xBeg; x < xEnd; x++)
+                {
+                    finalColor = GetFinalColor(null, new Point3D(x, y, CalcZofDispPoint(x, y)));
+                    lockBitmap.SetPixel(x, y, finalColor);
+                }
+                // set last pixel which is on activeEdges[i+1]
+                finalColor = GetFinalColor(activeEdges[i + 1], new Point3D(xEnd, y, CalcZofDispPoint(xEnd, y)));
+                lockBitmap.SetPixel(xEnd, y, finalColor);
+
+                // update x-es for the edges
+                activeEdges[i].CurrentDrawingX += activeEdges[i].Slope!.Value;
+                activeEdges[i + 1].CurrentDrawingX += activeEdges[i + 1].Slope!.Value;
+
+                i += 2;
+            }
+        }
+        
+        // ================================= CALCULATIONS FUNCTIONS ================================================
         private Vector InterpolateNormVector(Point3D point, bool r3)
         {
             TriangleInterpolator interpolator = new TriangleInterpolator(
@@ -104,7 +176,6 @@ namespace GKProj2
             //TriangleInterpolator interpolator = new TriangleInterpolator(vertList[0].ToDispPoint3D(), vertList[1].ToDispPoint3D(), vertList[2].ToDispPoint3D(), new Point3D(px, py), false);
             //return interpolator.Interpolate(vertList[0].DispZ, vertList[1].DispZ, vertList[2].DispZ);
         }
-        
         public (double minY,double MaxY) GetDispYRange()
         {
             double minY = vertList[0].DispY;
@@ -116,103 +187,23 @@ namespace GKProj2
             }
             return(minY,maxY);
         }
-
-        public void CalcVertColors(Vert lightPosition, double m, double kd, double ks, Color sphereColor, Color lightColor)
+        public void CalcVertColors()
         {
             foreach(Vert v in vertList)
             {
-                Vector lightVector = new Vector(v.ToDispPoint3D(), lightPosition.ToDispPoint3D());
+                Vector lightVector = new Vector(v.ToDispPoint3D(), DrawingArgs.lightPosition!.ToDispPoint3D());
                 lightVector.Normalize();
 
                 var finalColor = MathFunctions.CalculateFinalColor(
                     v.NormVector,
                     lightVector,
                     new Vector(0, 0, 1),
-                    m, kd, ks,
-                    ColorConverter.RGBToStandarized(sphereColor),
-                    ColorConverter.RGBToStandarized(lightColor));
+                    DrawingArgs.m, DrawingArgs.kd, DrawingArgs.ks,
+                    ColorConverter.RGBToStandarized(DrawingArgs.sphereColor),
+                    ColorConverter.RGBToStandarized(DrawingArgs.lightColor));
                 v.Color = finalColor;
             }
         }
-
-        public void FillTriangle(LockBitmap lockBitmap, Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3)
-        {
-            // calculating colors for interpolation
-            if (!vecInterpolation)
-                CalcVertColors(lightPosition, m, kd, ks, sphereColor, lightColor);
-
-            // get Y range for itarating
-            var yDispRange = GetDispYRange();
-            int yMin = (int)yDispRange.minY;
-            int yMax = (int)yDispRange.MaxY;
-
-            // init ET
-            List<Edge>[] edgeTable = InitEdgeTable(yMin, yMax);
-            List<Edge> activeEdges = new List<Edge>();
-
-            for(int yIdx = 0; yIdx < yMax - yMin + 1; yIdx++)
-            {
-                if(edgeTable[yIdx].Count > 0)
-                {
-                    // adding new active edges
-                    activeEdges.AddRange(edgeTable[yIdx]);
-                }
-                activeEdges = activeEdges.OrderBy(e => e.Slope == null ? double.MinValue : e.CurrentDrawingX).ToList(); // sort and put horizontal edges in the front of the list
-                
-                // remove all edges which are not horizontal (to avoid situation with two edges with same drawingX)
-                activeEdges.RemoveAll(e => e.Slope != null && (int)e.YDispMax == yIdx + yMin);
-
-                FillScanline(lockBitmap, activeEdges, yIdx + yMin, sphereColor, vecInterpolation, lightPosition, lightColor, m, kd, ks, r3);
-                // remove all edges which will be unused in next iteration
-                activeEdges.RemoveAll(e => e.Slope == null);
-            }
-        }
-
-        private void FillScanline(LockBitmap lockBitmap, List<Edge> activeEdges, int y,
-            Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor,double m,
-            double kd, double ks, bool r3)
-        {
-            Color finalColor;
-            int i = 0;
-            // fill horizontal lines first
-            while(i < activeEdges.Count && activeEdges[i].Slope == null)
-            {
-                for(int x = activeEdges[i].XDispMin; x < activeEdges[i].XDispMax; x++)
-                {
-                    double z = CalcZofDispPoint(x, y);
-                    finalColor = GetFinalColor(activeEdges[i], new Point3D(x, y, z), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                    lockBitmap.SetPixel(x, y, finalColor);
-                }
-                i++;
-            }
-            // fill spaces between pairs of edges
-            while(i < activeEdges.Count)
-            {
-                // set first pixel which is on activeEdges[i]
-                int xBeg = (int)Math.Round(activeEdges[i].CurrentDrawingX);
-                finalColor = GetFinalColor(activeEdges[i], new Point3D(xBeg, y, CalcZofDispPoint(xBeg, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                lockBitmap.SetPixel(xBeg, y, finalColor);
-
-                //set pixels inbetween edges
-                xBeg++;
-                int xEnd = (int)Math.Round(activeEdges[i + 1].CurrentDrawingX);
-                for (int x = xBeg; x < xEnd; x++)
-                {
-                    finalColor = GetFinalColor(null, new Point3D(x, y, CalcZofDispPoint(x, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                    lockBitmap.SetPixel(x, y, finalColor);
-                }
-                // set last pixel which is on activeEdges[i+1]
-                finalColor = GetFinalColor(activeEdges[i+1], new Point3D(xEnd, y, CalcZofDispPoint(xEnd, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                lockBitmap.SetPixel(xEnd, y, finalColor);
-                
-                // update x-es for the edges
-                activeEdges[i].CurrentDrawingX += activeEdges[i].Slope!.Value; 
-                activeEdges[i+1].CurrentDrawingX += activeEdges[i+1].Slope!.Value;
-                
-                i += 2;
-            }
-        }
-
         public List<Edge>[] InitEdgeTable(int yMin, int yMax)
         {
             // init ET
@@ -226,32 +217,31 @@ namespace GKProj2
             }
             return edgeTable;
         }
-
-        public Color GetFinalColor(Edge? simplifier, Point3D point, Vert lightPosition, double m, double kd, double ks, Color sphereColor, Color lightColor, bool vecInterpolation, bool r3)
+        public Color GetFinalColor(Edge? simplifier, Point3D point)
         {
             NormalizedColor finalColor;
-            if (vecInterpolation)
+            if (DrawingArgs.vecInterpolation)
             {
                 var vNorm =
                     simplifier == null ?
-                    InterpolateNormVector(point, r3) :
+                    InterpolateNormVector(point, DrawingArgs.r3) :
                     simplifier.InterpolateNormalVectorInPoint(point);
 
-                Vector lightVector = new Vector(point, lightPosition.ToDispPoint3D());
+                Vector lightVector = new Vector(point, DrawingArgs.lightPosition!.ToDispPoint3D());
                 lightVector.Normalize();
 
                 finalColor = MathFunctions.CalculateFinalColor(
                     vNorm,
                     lightVector,
                     new Vector(0, 0, 1),
-                    m, kd, ks,
-                    ColorConverter.RGBToStandarized(sphereColor),
-                    ColorConverter.RGBToStandarized(lightColor));
+                    DrawingArgs.m, DrawingArgs.kd, DrawingArgs.ks,
+                    ColorConverter.RGBToStandarized(DrawingArgs.sphereColor),
+                    ColorConverter.RGBToStandarized(DrawingArgs.lightColor));
             }
             else
             {
                 finalColor = simplifier == null ?
-                    InterpolateColors(vertList[0].Color!.Value, vertList[1].Color!.Value, vertList[2].Color!.Value, point, r3) :
+                    InterpolateColors(vertList[0].Color!.Value, vertList[1].Color!.Value, vertList[2].Color!.Value, point, DrawingArgs.r3) :
                     simplifier.InterpolateColorInPoint(point);
             }
 

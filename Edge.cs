@@ -9,7 +9,6 @@ namespace GKProj2
 {
     public class Edge
     {
-        //private Vert _v1, _v2;
         private static int _idProvider = 1;
         public int Id { get; }
         public Vert V1 { get; set; }

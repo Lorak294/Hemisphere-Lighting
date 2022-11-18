@@ -14,27 +14,26 @@ namespace GKProj2
         private Bitmap canvas;
         private LockBitmap lockBitmap;
         private List<Figure> figureList = new List<Figure>();
-        private double ks, kd, m;
         private int elapsedTime = 0;
-        private bool vecInterpolation = true, r3interpolation = false;
-        private Vert lightPosition;
 
-
-        private Color sphereColor = Color.White;
-        private Color lightColor = Color.White;
         public Form1()
         {
             InitializeComponent();
 
-            //this.drawingArgs = new DrawingArgs()
-
-            colorShowButton.BackColor = sphereColor;
-            lightColorShowButton.BackColor = lightColor;
-            ks = kd = 0.5;
-            m = 50;
+            colorShowButton.BackColor = Color.White;
+            lightColorShowButton.BackColor = Color.White;
             
             // LIGHT ON TOP OF THE SPHERE
-            lightPosition = new Vert(0, 0, lightZBar.Value / 10, new Vector(0, 0, 0));
+            DrawingArgs.lightPosition = new Vert(0, 0, lightZBar.Value / 10, new Vector(0, 0, 0));
+            DrawingArgs.lightColor = Color.White;
+            DrawingArgs.sphereColor = Color.White;
+            DrawingArgs.m = mBar.Value;
+            DrawingArgs.kd = (double)kdBar.Value / 100;
+            DrawingArgs.ks = (double)ksBar.Value / 100;
+            DrawingArgs.r3 = r3RadioButton.Checked;
+            DrawingArgs.vecInterpolation = vecIntRadioButton.Checked;
+
+
 
             canvas = new Bitmap(pictureBox.Width, pictureBox.Height);
             pictureBox.Image = canvas;
@@ -47,15 +46,6 @@ namespace GKProj2
             figureList = new List<Figure>();
             ImportObjFile("C:\\VS Projects\\GKProj2\\hemisphereAVG.obj");
 
-            //figureList.Add(new Figure(new List<Vert> {
-            //    new Vert(0.19509,0,0.980785, new Vector(0, 0, 1)),
-            //    new Vert(0, 0, 1,  new Vector(0, 0, 1)),
-            //    new Vert(0.191342,-0.03806,0.980785,  new Vector(0, 0, 1)) }));
-
-            //figureList.Add(new Figure(new List<Vert> {
-            //    new Vert(0.5,0,0, new Vector(0, 0, 1)),
-            //    new Vert(0.5, 0.5, 0,  new Vector(0, 0, 1)),
-            //    new Vert(-0.5,-0.3,0,  new Vector(0, 0, 1)) }));
 
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
@@ -72,7 +62,7 @@ namespace GKProj2
             lockBitmap.LockBits();
             foreach (Figure f in figureList)
             {
-                f.DrawInside(lockBitmap, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition,lightColor,m,kd,ks,r3interpolation);
+                f.FillTriangle(lockBitmap);
             }
             lockBitmap.UnlockBits();
             if (netCheckBox.Checked)
@@ -191,8 +181,8 @@ namespace GKProj2
             (double sinT,double cosT) = Math.SinCos(elapsedTime);
             double radius = Math.Abs(Math.Sin(0.0005*elapsedTime));
 
-            lightPosition.X = cosT * radius;
-            lightPosition.Y = sinT * radius;
+            DrawingArgs.lightPosition!.X = cosT * radius;
+            DrawingArgs.lightPosition!.Y = sinT * radius;
         }
 
         private void pictureBox_SizeChanged(object sender, EventArgs e)
@@ -216,8 +206,8 @@ namespace GKProj2
             // Update the text box color if the user clicks OK 
             if (MyDialog.ShowDialog() == DialogResult.OK)
             {
-                sphereColor = MyDialog.Color;
-                colorShowButton.BackColor = sphereColor;
+                DrawingArgs.sphereColor = MyDialog.Color;
+                colorShowButton.BackColor = DrawingArgs.sphereColor;
             }
             DrawAll();
         }
@@ -230,7 +220,7 @@ namespace GKProj2
         private void kdBar_Scroll(object sender, EventArgs e)
         {
             kdValueLabel.Text = ((double)kdBar.Value / 100).ToString();
-            kd = (float)kdBar.Value / 100;
+            DrawingArgs.kd = (float)kdBar.Value / 100;
             DrawAll();
         }
 
@@ -241,22 +231,22 @@ namespace GKProj2
             MyDialog.Color = Color.White;
             if (MyDialog.ShowDialog() == DialogResult.OK)
             {
-                lightColor = MyDialog.Color;
-                lightColorShowButton.BackColor = lightColor;
+                DrawingArgs.lightColor = MyDialog.Color;
+                lightColorShowButton.BackColor = DrawingArgs.lightColor;
             }
             DrawAll();
         }
 
         private void vecIntRadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            vecInterpolation = vecIntRadioButton.Checked;
+            DrawingArgs.vecInterpolation = vecIntRadioButton.Checked;
             DrawAll();
         }
 
         private void lightZBar_Scroll(object sender, EventArgs e)
         {
             lightZValueLabel.Text = ((double)lightZBar.Value / 10).ToString();
-            lightPosition.Z = (double)lightZBar.Value / 10;
+            DrawingArgs.lightPosition!.Z = (double)lightZBar.Value / 10;
             DrawAll();
         }
 
@@ -278,21 +268,21 @@ namespace GKProj2
 
         private void r2RadioButton_CheckedChanged(object sender, EventArgs e)
         {
-            r3interpolation = r3RadioButton.Checked;
+            DrawingArgs.r3 = r3RadioButton.Checked;
             DrawAll();
         }
 
         private void mBar_Scroll(object sender, EventArgs e)
         {
             mValueLabel.Text = mBar.Value.ToString();
-            m = mBar.Value;
+            DrawingArgs.m = mBar.Value;
             DrawAll();
         }
 
         private void ksBar_Scroll(object sender, EventArgs e)
         {
             ksValueLabel.Text = ((double)ksBar.Value / 100).ToString();
-            ks = (float)ksBar.Value / 100;
+            DrawingArgs.ks = (double)ksBar.Value / 100;
             DrawAll();
         }
     }

@@ -40,21 +40,31 @@ namespace GKProj2
 
             Id = _idProvider++;
         }
-        public void Draw(Bitmap canvas, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
+        
+        
+        public void DrawOutline(Bitmap canvas)
         {
-            FillTriangle(canvas, color,vecInterpolation,lightPosition, lightColor,m,kd,ks, r3interpolation);
-            if (drawNet)
+            foreach (Edge e in edgeList)
             {
-                foreach (Edge e in edgeList)
-                {
-                    e.Draw(canvas);
-                }
+                e.Draw(canvas);
             }
+        }
 
-            using (Graphics g = Graphics.FromImage(canvas))
-            {
-                g.FillEllipse(Brushes.Red, (float)lightPosition.DispX - 5, (float)lightPosition.DispY - 5, 10, 10);
-            }
+        public void DrawInside(LockBitmap lockBitmap, Color color, bool drawNet, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3interpolation)
+        {
+            FillTriangle(lockBitmap, color,vecInterpolation,lightPosition, lightColor,m,kd,ks, r3interpolation);
+            //if (drawNet)
+            //{
+            //    foreach (Edge e in edgeList)
+            //    {
+            //        e.Draw(lockBitmap);
+            //    }
+            //}
+
+            //using (Graphics g = Graphics.FromImage(canvas))
+            //{
+            //    g.FillEllipse(Brushes.Red, (float)lightPosition.DispX - 5, (float)lightPosition.DispY - 5, 10, 10);
+            //}
         }
         private Vector InterpolateNormVector(Point3D point, bool r3)
         {
@@ -137,7 +147,7 @@ namespace GKProj2
             }
         }
 
-        public void FillTriangle(Bitmap canvas, Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3)
+        public void FillTriangle(LockBitmap lockBitmap, Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor, double m, double kd, double ks, bool r3)
         {
             // calculating colors for interpolation
             if (!vecInterpolation)
@@ -164,13 +174,13 @@ namespace GKProj2
                 // remove all edges which are not horizontal (to avoid situation with two edges with same drawingX)
                 activeEdges.RemoveAll(e => e.Slope != null && (int)e.YDispMax == yIdx + yMin);
 
-                FillScanline(canvas, activeEdges, yIdx + yMin, sphereColor, vecInterpolation, lightPosition, lightColor, m, kd, ks, r3);
+                FillScanline(lockBitmap, activeEdges, yIdx + yMin, sphereColor, vecInterpolation, lightPosition, lightColor, m, kd, ks, r3);
                 // remove all edges which will be unused in next iteration
                 activeEdges.RemoveAll(e => e.Slope == null);
             }
         }
 
-        private void FillScanline(Bitmap canvas, List<Edge> activeEdges, int y,
+        private void FillScanline(LockBitmap lockBitmap, List<Edge> activeEdges, int y,
             Color sphereColor, bool vecInterpolation, Vert lightPosition, Color lightColor,double m,
             double kd, double ks, bool r3)
         {
@@ -183,7 +193,7 @@ namespace GKProj2
                 {
                     double z = CalcZofDispPoint(x, y);
                     finalColor = GetFinalColor(activeEdges[i], new Point3D(x, y, z), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                    canvas.SetPixel(x, y, finalColor);
+                    lockBitmap.SetPixel(x, y, finalColor);
                 }
                 i++;
             }
@@ -193,7 +203,7 @@ namespace GKProj2
                 // set first pixel which is on activeEdges[i]
                 int xBeg = (int)Math.Round(activeEdges[i].CurrentDrawingX);
                 finalColor = GetFinalColor(activeEdges[i], new Point3D(xBeg, y, CalcZofDispPoint(xBeg, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                canvas.SetPixel(xBeg, y, finalColor);
+                lockBitmap.SetPixel(xBeg, y, finalColor);
 
                 //set pixels inbetween edges
                 xBeg++;
@@ -201,11 +211,11 @@ namespace GKProj2
                 for (int x = xBeg; x < xEnd; x++)
                 {
                     finalColor = GetFinalColor(null, new Point3D(x, y, CalcZofDispPoint(x, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                    canvas.SetPixel(x, y, finalColor);
+                    lockBitmap.SetPixel(x, y, finalColor);
                 }
                 // set last pixel which is on activeEdges[i+1]
                 finalColor = GetFinalColor(activeEdges[i+1], new Point3D(xEnd, y, CalcZofDispPoint(xEnd, y)), lightPosition, m, kd, ks, sphereColor, lightColor, vecInterpolation, r3);
-                canvas.SetPixel(xEnd, y, finalColor);
+                lockBitmap.SetPixel(xEnd, y, finalColor);
                 
                 // update x-es for the edges
                 activeEdges[i].CurrentDrawingX += activeEdges[i].Slope!.Value; 

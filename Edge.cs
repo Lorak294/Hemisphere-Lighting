@@ -43,10 +43,9 @@ namespace GKProj2
 
         public void Draw(Bitmap canvas)
         {
-            Pen pen = new Pen(Brushes.Black);
-            using(Graphics g = Graphics.FromImage(canvas))
+            using (Graphics g = Graphics.FromImage(canvas))
             {
-                g.DrawLine(pen,V1.DispX, V1.DispY,V2.DispX, V2.DispY);
+                g.DrawLine(pen, V1.DispX, V1.DispY, V2.DispX, V2.DispY);
             }
         }
 

@@ -8,28 +8,17 @@ using System.Xml.Linq;
 
 namespace GKProj2
 {
-    //public struct DrawingArgs
-    //{
-    //    public Bitmap canvas;
-    //    public int m;
-    //    public double ks, kd;
-    //    public Vert lightSource;
-    //    public Color sphereColor;
-    //    public Color lightColor;
 
-    //    public DrawingArgs(Bitmap canvas)
-    //}
     public partial class Form1 : Form
     {
         private Bitmap canvas;
+        private LockBitmap lockBitmap;
         private List<Figure> figureList = new List<Figure>();
-        //private const int MARGIN = 20;
         private double ks, kd, m;
         private int elapsedTime = 0;
         private bool vecInterpolation = true, r3interpolation = false;
         private Vert lightPosition;
 
-        //private DrawingArgs drawingArgs;
 
         private Color sphereColor = Color.White;
         private Color lightColor = Color.White;
@@ -53,6 +42,8 @@ namespace GKProj2
             {
                 g.Clear(Color.White);
             }
+            lockBitmap = new LockBitmap(canvas);
+            
             figureList = new List<Figure>();
             ImportObjFile("C:\\VS Projects\\GKProj2\\hemisphereAVG.obj");
 
@@ -73,17 +64,28 @@ namespace GKProj2
 
         public void DrawAll()
         {
+            var sw = Stopwatch.StartNew();
             using(Graphics g = Graphics.FromImage(canvas))
             {
                 g.Clear(Color.White);
             }
-
+            lockBitmap.LockBits();
             foreach (Figure f in figureList)
             {
-                f.Draw(canvas, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition,lightColor,m,kd,ks,r3interpolation);
+                f.DrawInside(lockBitmap, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition,lightColor,m,kd,ks,r3interpolation);
             }
-            //figureList[3].Draw(canvas, sphereColor, netCheckBox.Checked, vecInterpolation, lightPosition);
+            lockBitmap.UnlockBits();
+            if (netCheckBox.Checked)
+            {
+                foreach(Figure f in figureList)
+                {
+                    f.DrawOutline(canvas);
+                }
+            }
             pictureBox.Refresh();
+
+            sw.Stop();
+            Debug.WriteLine(sw.ElapsedMilliseconds.ToString());
         }
 
         // OBJ FILE IMPORT
@@ -197,6 +199,7 @@ namespace GKProj2
         {
             canvas = new Bitmap(pictureBox.Size.Width, pictureBox.Size.Height);
             pictureBox.Image = canvas;
+            lockBitmap = new LockBitmap(canvas);
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
             DrawAll();

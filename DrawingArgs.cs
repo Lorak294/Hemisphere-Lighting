@@ -32,6 +32,13 @@ namespace GKProj2
                 return sphereColor;
             }
         }
+
+        public static Vector GetNormalMapVector(int x, int y)
+        {
+            Point normalMapPixel = RenderParameters.GetSphereRealtivePixel(x, y);
+            Color normalMapColor = normalMapLockBitmap!.GetPixel(normalMapPixel.X % normalMapLockBitmap!.Width, normalMapPixel.Y % normalMapLockBitmap!.Height);
+            return (ColorConverter.RGBToNormalVector(normalMapColor));
+        }
     }
 
     public static class RenderParameters

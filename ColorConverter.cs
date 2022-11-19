@@ -24,5 +24,14 @@ namespace GKProj2
                 Math.Min((int)(colorStandarized.g * 255.0), 255),
                 Math.Min((int)(colorStandarized.b * 255.0), 255));
         }
+
+        public static Vector RGBToNormalVector(Color color)
+        {
+            return new Vector(
+                (double)(color.R - 127) / 128,
+                (double)(color.G - 127) / 128,
+                (double)(color.B - 127) / 128
+                );
+        }
     }
 }

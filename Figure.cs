@@ -195,7 +195,7 @@ namespace GKProj2
                 lightVector.Normalize();
 
                 var finalColor = MathFunctions.CalculateFinalColor(
-                    v.NormVector,
+                    DrawingArgs.useNormalMap? MathFunctions.ApplyNormalMap(v.NormVector,v.ToDispPoint3D()): v.NormVector,
                     lightVector,
                     new Vector(0, 0, 1),
                     DrawingArgs.m, DrawingArgs.kd, DrawingArgs.ks,
@@ -226,6 +226,11 @@ namespace GKProj2
                     simplifier == null ?
                     InterpolateNormVector(point, DrawingArgs.r3) :
                     simplifier.InterpolateNormalVectorInPoint(point);
+
+                if (DrawingArgs.useNormalMap)
+                {
+                    vNorm = MathFunctions.ApplyNormalMap(vNorm, point);
+                }
 
                 Vector lightVector = new Vector(point, DrawingArgs.lightPosition!.ToDispPoint3D());
                 lightVector.Normalize();

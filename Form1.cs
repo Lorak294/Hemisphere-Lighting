@@ -368,6 +368,7 @@ namespace GKProj2
                 normalMapButton.Enabled=false; 
                 DrawingArgs.useNormalMap = false;
             }
+            DrawAll();
         }
     }
 }

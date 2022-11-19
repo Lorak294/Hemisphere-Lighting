@@ -30,9 +30,17 @@ namespace GKProj2
             return new NormalizedColor(finalR, finalG, finalB);
         }
 
-        public static void ApplyNormalMap(Vector normVector, Point3D point)
+        public static Vector ApplyNormalMap(Vector normVector, Point3D point)
         {
-            //Vector B = (normVector.x == 0 && normVector.y == 0 && normVector.z == 1)? new Vector(0,1,0) : //iloczyn wekrtorowy normVector x [0,0,1]; 
+            Vector vB = (normVector.x == 0 && normVector.y == 0 && normVector.z == 1) ? new Vector(0, 1, 0) : CrossProduct(normVector, new Vector(0, 0, 1));
+            Vector vT = CrossProduct(vB, normVector);
+
+            Matrix M = new Matrix(vT, vB, normVector);
+
+            Vector finalVector =  M.MultiplyByVector(DrawingArgs.GetNormalMapVector((int)point.x, (int)point.y));
+            finalVector.Normalize();
+
+            return finalVector;
         }
 
 
@@ -40,7 +48,17 @@ namespace GKProj2
         {
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
         }
+        public static Vector CrossProduct(Vector v1, Vector v2)
+        {
+            double x, y, z;
+            x = v1.y * v2.z - v2.y * v1.z;
+            y = (v1.x * v2.z - v2.x * v1.z) * -1;
+            z = v1.x * v2.y - v2.x * v1.y;
 
+            var rtnvector = new Vector(x, y, z);
+            rtnvector.Normalize(); // - ?
+            return rtnvector;
+        }
         public static double TriangleArea(Point3D a, Point3D b, Point3D c, bool r3 = true)
         {
             if (r3)

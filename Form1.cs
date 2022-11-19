@@ -13,6 +13,7 @@ namespace GKProj2
     {
         private Bitmap canvas;
         private Bitmap texture;
+        private Bitmap normalMap;
         private LockBitmap lockBitmapCanvas;
 
         private List<Figure> figureList = new List<Figure>();
@@ -39,7 +40,16 @@ namespace GKProj2
             {
                 g.DrawImage(textureShowButton.BackgroundImage, textureShowButton.DisplayRectangle);
             }
+
+            normalMap = new Bitmap("../../../defaultNormalMap.png");
+            normalMapShowButton.BackgroundImage = normalMap;
+            using (Graphics g = Graphics.FromImage(normalMapShowButton.BackgroundImage))
+            {
+                g.DrawImage(normalMapShowButton.BackgroundImage, normalMapShowButton.DisplayRectangle);
+            }
+
             DrawingArgs.textureLockBitmap = new LockBitmap(texture);
+            DrawingArgs.normalMapLockBitmap = new LockBitmap(normalMap);
             DrawingArgs.lightPosition = new Vert(0, 0, lightZBar.Value / 10, new Vector(0, 0, 0));
             DrawingArgs.lightColor = Color.White;
             DrawingArgs.sphereColor = Color.White;
@@ -49,6 +59,7 @@ namespace GKProj2
             DrawingArgs.r3 = r3RadioButton.Checked;
             DrawingArgs.vecInterpolation = vecIntRadioButton.Checked;
             DrawingArgs.textureDraw = textureRadioButton.Checked;
+            DrawingArgs.useNormalMap = normalMapCheckBox.Checked;
 
             RenderParameters.height = canvas.Height;
             RenderParameters.width = canvas.Width;
@@ -62,18 +73,18 @@ namespace GKProj2
         public void DrawAll()
         {
             var sw = Stopwatch.StartNew();
-            using(Graphics g = Graphics.FromImage(canvas))
-            {
-                g.Clear(Color.White);
-            }
+            
             lockBitmapCanvas.LockBits();
             DrawingArgs.textureLockBitmap!.LockBits();
+            if (DrawingArgs.useNormalMap) DrawingArgs.normalMapLockBitmap!.LockBits();
             foreach (Figure f in figureList)
             {
                 f.FillTriangle(lockBitmapCanvas);
             }
+            if (DrawingArgs.useNormalMap) DrawingArgs.normalMapLockBitmap!.UnlockBits();
             DrawingArgs.textureLockBitmap!.UnlockBits();
             lockBitmapCanvas.UnlockBits();
+            
             if (netCheckBox.Checked)
             {
                 foreach(Figure f in figureList)
@@ -322,6 +333,41 @@ namespace GKProj2
                 DrawingArgs.textureDraw = true;
             }
             DrawAll();
+        }
+        private void normalMapButton_Click(object sender, EventArgs e)
+        {
+            using (OpenFileDialog dlg = new OpenFileDialog())
+            {
+                dlg.Title = "Select Normal Map";
+                dlg.Filter = "Image files |*.bmp;*.png";
+
+                if (dlg.ShowDialog() == DialogResult.OK)
+                {
+                    normalMap.Dispose();
+                    normalMap = new Bitmap(dlg.FileName);
+                    normalMapShowButton.BackgroundImage = normalMap;
+                    DrawingArgs.normalMapLockBitmap = new LockBitmap(normalMap);
+
+                    using (Graphics g = Graphics.FromImage(normalMapShowButton.BackgroundImage))
+                    {
+                        g.DrawImage(normalMapShowButton.BackgroundImage, normalMapShowButton.DisplayRectangle);
+                    }
+                }
+            }
+            DrawAll();
+        }
+        private void normalMapCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            if(normalMapCheckBox.Checked)
+            {
+                normalMapButton.Enabled = true;
+                DrawingArgs.useNormalMap = true;
+            }
+            else
+            {
+                normalMapButton.Enabled=false; 
+                DrawingArgs.useNormalMap = false;
+            }
         }
     }
 }

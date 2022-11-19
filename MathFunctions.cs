@@ -30,6 +30,12 @@ namespace GKProj2
             return new NormalizedColor(finalR, finalG, finalB);
         }
 
+        public static void ApplyNormalMap(Vector normVector, Point3D point)
+        {
+            //Vector B = (normVector.x == 0 && normVector.y == 0 && normVector.z == 1)? new Vector(0,1,0) : //iloczyn wekrtorowy normVector x [0,0,1]; 
+        }
+
+
         public static double DotProduct(Vector v1, Vector v2)
         {
             return v1.x * v2.x + v1.y * v2.y + v1.z * v2.z;
@@ -70,24 +76,24 @@ namespace GKProj2
                 return Math.Sqrt((p2.x - p1.x) * (p2.x - p1.x) + (p2.y - p1.y) * (p2.y - p1.y));
         }
 
-        public static double Sign(Point3D p1, Point3D p2, Point3D p3)
-        {
-            return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
-        }
+        //public static double Sign(Point3D p1, Point3D p2, Point3D p3)
+        //{
+        //    return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y);
+        //}
 
-        public static bool PointInTriangle(Point3D pt, Point3D v1, Point3D v2, Point3D v3)
-        {
-            double d1, d2, d3;
-            bool has_neg, has_pos;
+        //public static bool PointInTriangle(Point3D pt, Point3D v1, Point3D v2, Point3D v3)
+        //{
+        //    double d1, d2, d3;
+        //    bool has_neg, has_pos;
 
-            d1 = Sign(pt, v1, v2);
-            d2 = Sign(pt, v2, v3);
-            d3 = Sign(pt, v3, v1);
+        //    d1 = Sign(pt, v1, v2);
+        //    d2 = Sign(pt, v2, v3);
+        //    d3 = Sign(pt, v3, v1);
 
-            has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
-            has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
+        //    has_neg = (d1 < 0) || (d2 < 0) || (d3 < 0);
+        //    has_pos = (d1 > 0) || (d2 > 0) || (d3 > 0);
 
-            return !(has_neg && has_pos);
-        }
+        //    return !(has_neg && has_pos);
+        //}
     }
 }

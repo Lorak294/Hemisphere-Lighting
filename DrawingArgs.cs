@@ -16,7 +16,9 @@ namespace GKProj2
         public static bool vecInterpolation;
         public static bool r3;
         public static bool textureDraw;
+        public static bool useNormalMap;
         public static LockBitmap? textureLockBitmap;
+        public static LockBitmap? normalMapLockBitmap;
 
         public static Color GetPixelColor(int x, int y)
         {

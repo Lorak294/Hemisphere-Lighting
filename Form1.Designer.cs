@@ -33,6 +33,9 @@
             this.pictureBox = new System.Windows.Forms.PictureBox();
             this.tableLayoutPanel2 = new System.Windows.Forms.TableLayoutPanel();
             this.colorBox = new System.Windows.Forms.GroupBox();
+            this.normalMapShowButton = new System.Windows.Forms.Button();
+            this.normalMapButton = new System.Windows.Forms.Button();
+            this.normalMapCheckBox = new System.Windows.Forms.CheckBox();
             this.textureShowButton = new System.Windows.Forms.Button();
             this.sphereTextureButton = new System.Windows.Forms.Button();
             this.netCheckBox = new System.Windows.Forms.CheckBox();
@@ -129,7 +132,7 @@
             this.tableLayoutPanel2.Location = new System.Drawing.Point(979, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
-            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 175F));
+            this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 225F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
@@ -138,6 +141,9 @@
             // 
             // colorBox
             // 
+            this.colorBox.Controls.Add(this.normalMapShowButton);
+            this.colorBox.Controls.Add(this.normalMapButton);
+            this.colorBox.Controls.Add(this.normalMapCheckBox);
             this.colorBox.Controls.Add(this.textureShowButton);
             this.colorBox.Controls.Add(this.sphereTextureButton);
             this.colorBox.Controls.Add(this.netCheckBox);
@@ -148,10 +154,41 @@
             this.colorBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.colorBox.Location = new System.Drawing.Point(3, 3);
             this.colorBox.Name = "colorBox";
-            this.colorBox.Size = new System.Drawing.Size(232, 169);
+            this.colorBox.Size = new System.Drawing.Size(232, 219);
             this.colorBox.TabIndex = 1;
             this.colorBox.TabStop = false;
-            this.colorBox.Text = "Sphere color";
+            this.colorBox.Text = "Sphere parameters";
+            // 
+            // normalMapShowButton
+            // 
+            this.normalMapShowButton.Enabled = false;
+            this.normalMapShowButton.Location = new System.Drawing.Point(165, 178);
+            this.normalMapShowButton.Name = "normalMapShowButton";
+            this.normalMapShowButton.Size = new System.Drawing.Size(33, 31);
+            this.normalMapShowButton.TabIndex = 9;
+            this.normalMapShowButton.UseVisualStyleBackColor = true;
+            // 
+            // normalMapButton
+            // 
+            this.normalMapButton.Enabled = false;
+            this.normalMapButton.Location = new System.Drawing.Point(15, 178);
+            this.normalMapButton.Name = "normalMapButton";
+            this.normalMapButton.Size = new System.Drawing.Size(144, 31);
+            this.normalMapButton.TabIndex = 8;
+            this.normalMapButton.Text = "Change Normal Map";
+            this.normalMapButton.UseVisualStyleBackColor = true;
+            this.normalMapButton.Click += new System.EventHandler(this.normalMapButton_Click);
+            // 
+            // normalMapCheckBox
+            // 
+            this.normalMapCheckBox.AutoSize = true;
+            this.normalMapCheckBox.Location = new System.Drawing.Point(15, 153);
+            this.normalMapCheckBox.Name = "normalMapCheckBox";
+            this.normalMapCheckBox.Size = new System.Drawing.Size(115, 19);
+            this.normalMapCheckBox.TabIndex = 7;
+            this.normalMapCheckBox.Text = "Use Normal Map";
+            this.normalMapCheckBox.UseVisualStyleBackColor = true;
+            this.normalMapCheckBox.CheckedChanged += new System.EventHandler(this.normalMapCheckBox_CheckedChanged);
             // 
             // textureShowButton
             // 
@@ -165,22 +202,22 @@
             // sphereTextureButton
             // 
             this.sphereTextureButton.Enabled = false;
-            this.sphereTextureButton.Location = new System.Drawing.Point(32, 116);
+            this.sphereTextureButton.Location = new System.Drawing.Point(15, 116);
             this.sphereTextureButton.Name = "sphereTextureButton";
-            this.sphereTextureButton.Size = new System.Drawing.Size(127, 31);
+            this.sphereTextureButton.Size = new System.Drawing.Size(144, 31);
             this.sphereTextureButton.TabIndex = 5;
-            this.sphereTextureButton.Text = "Sphere Texture";
+            this.sphereTextureButton.Text = "Change Sphere Texture";
             this.sphereTextureButton.UseVisualStyleBackColor = true;
             this.sphereTextureButton.Click += new System.EventHandler(this.sphereTextureButton_Click);
             // 
             // netCheckBox
             // 
             this.netCheckBox.AutoSize = true;
-            this.netCheckBox.Location = new System.Drawing.Point(109, 47);
+            this.netCheckBox.Location = new System.Drawing.Point(109, 48);
             this.netCheckBox.Name = "netCheckBox";
-            this.netCheckBox.Size = new System.Drawing.Size(117, 19);
+            this.netCheckBox.Size = new System.Drawing.Size(121, 19);
             this.netCheckBox.TabIndex = 4;
-            this.netCheckBox.Text = "show triangle net";
+            this.netCheckBox.Text = "Show Triangle Net";
             this.netCheckBox.UseVisualStyleBackColor = true;
             this.netCheckBox.CheckedChanged += new System.EventHandler(this.netCheckBox_CheckedChanged);
             // 
@@ -218,11 +255,11 @@
             // 
             // sphereColorButton
             // 
-            this.sphereColorButton.Location = new System.Drawing.Point(32, 81);
+            this.sphereColorButton.Location = new System.Drawing.Point(15, 81);
             this.sphereColorButton.Name = "sphereColorButton";
-            this.sphereColorButton.Size = new System.Drawing.Size(127, 31);
+            this.sphereColorButton.Size = new System.Drawing.Size(144, 31);
             this.sphereColorButton.TabIndex = 0;
-            this.sphereColorButton.Text = "Sphere Color";
+            this.sphereColorButton.Text = "Change Sphere Color";
             this.sphereColorButton.UseVisualStyleBackColor = true;
             this.sphereColorButton.Click += new System.EventHandler(this.chooseColor_Click);
             // 
@@ -246,7 +283,7 @@
             this.lightGroupBox.Controls.Add(this.label1);
             this.lightGroupBox.Controls.Add(this.kdBar);
             this.lightGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.lightGroupBox.Location = new System.Drawing.Point(3, 178);
+            this.lightGroupBox.Location = new System.Drawing.Point(3, 228);
             this.lightGroupBox.Name = "lightGroupBox";
             this.lightGroupBox.Size = new System.Drawing.Size(232, 193);
             this.lightGroupBox.TabIndex = 2;
@@ -304,7 +341,7 @@
             // lightColorShowButton
             // 
             this.lightColorShowButton.Enabled = false;
-            this.lightColorShowButton.Location = new System.Drawing.Point(167, 147);
+            this.lightColorShowButton.Location = new System.Drawing.Point(165, 147);
             this.lightColorShowButton.Name = "lightColorShowButton";
             this.lightColorShowButton.Size = new System.Drawing.Size(33, 31);
             this.lightColorShowButton.TabIndex = 11;
@@ -312,11 +349,11 @@
             // 
             // lightColorButton
             // 
-            this.lightColorButton.Location = new System.Drawing.Point(31, 147);
+            this.lightColorButton.Location = new System.Drawing.Point(15, 147);
             this.lightColorButton.Name = "lightColorButton";
-            this.lightColorButton.Size = new System.Drawing.Size(128, 31);
+            this.lightColorButton.Size = new System.Drawing.Size(144, 31);
             this.lightColorButton.TabIndex = 10;
-            this.lightColorButton.Text = "Light Color";
+            this.lightColorButton.Text = "Change Light Color";
             this.lightColorButton.UseVisualStyleBackColor = true;
             this.lightColorButton.Click += new System.EventHandler(this.lightColorButton_Click);
             // 
@@ -425,7 +462,7 @@
             this.animationGroupBox.Controls.Add(this.label13);
             this.animationGroupBox.Controls.Add(this.lightZBar);
             this.animationGroupBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.animationGroupBox.Location = new System.Drawing.Point(3, 377);
+            this.animationGroupBox.Location = new System.Drawing.Point(3, 427);
             this.animationGroupBox.Name = "animationGroupBox";
             this.animationGroupBox.Size = new System.Drawing.Size(232, 80);
             this.animationGroupBox.TabIndex = 3;
@@ -497,7 +534,7 @@
             this.interpolationBox.Controls.Add(this.groupBox2);
             this.interpolationBox.Controls.Add(this.groupBox1);
             this.interpolationBox.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.interpolationBox.Location = new System.Drawing.Point(3, 463);
+            this.interpolationBox.Location = new System.Drawing.Point(3, 513);
             this.interpolationBox.Name = "interpolationBox";
             this.interpolationBox.Size = new System.Drawing.Size(232, 205);
             this.interpolationBox.TabIndex = 4;
@@ -653,5 +690,8 @@
         private System.Windows.Forms.Timer timer1;
         private Button textureShowButton;
         private Button sphereTextureButton;
+        private CheckBox normalMapCheckBox;
+        private Button normalMapShowButton;
+        private Button normalMapButton;
     }
 }

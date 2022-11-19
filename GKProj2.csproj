@@ -9,6 +9,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Update="defaultNormalMap.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="defaultTexture.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

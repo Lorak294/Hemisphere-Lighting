@@ -105,7 +105,7 @@
             this.tableLayoutPanel1.RowCount = 1;
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 100F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1220, 630);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1154, 623);
             this.tableLayoutPanel1.TabIndex = 1;
             // 
             // pictureBox
@@ -113,7 +113,7 @@
             this.pictureBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.pictureBox.Location = new System.Drawing.Point(3, 3);
             this.pictureBox.Name = "pictureBox";
-            this.pictureBox.Size = new System.Drawing.Size(970, 624);
+            this.pictureBox.Size = new System.Drawing.Size(904, 617);
             this.pictureBox.TabIndex = 0;
             this.pictureBox.TabStop = false;
             this.pictureBox.SizeChanged += new System.EventHandler(this.pictureBox_SizeChanged);
@@ -129,14 +129,14 @@
             this.tableLayoutPanel2.Controls.Add(this.lightGroupBox, 0, 1);
             this.tableLayoutPanel2.Controls.Add(this.animationGroupBox, 0, 2);
             this.tableLayoutPanel2.Controls.Add(this.interpolationBox, 0, 3);
-            this.tableLayoutPanel2.Location = new System.Drawing.Point(979, 3);
+            this.tableLayoutPanel2.Location = new System.Drawing.Point(913, 3);
             this.tableLayoutPanel2.Name = "tableLayoutPanel2";
             this.tableLayoutPanel2.RowCount = 4;
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 225F));
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
             this.tableLayoutPanel2.RowStyles.Add(new System.Windows.Forms.RowStyle());
-            this.tableLayoutPanel2.Size = new System.Drawing.Size(238, 624);
+            this.tableLayoutPanel2.Size = new System.Drawing.Size(238, 617);
             this.tableLayoutPanel2.TabIndex = 2;
             // 
             // colorBox
@@ -536,7 +536,7 @@
             this.interpolationBox.Dock = System.Windows.Forms.DockStyle.Fill;
             this.interpolationBox.Location = new System.Drawing.Point(3, 513);
             this.interpolationBox.Name = "interpolationBox";
-            this.interpolationBox.Size = new System.Drawing.Size(232, 205);
+            this.interpolationBox.Size = new System.Drawing.Size(232, 239);
             this.interpolationBox.TabIndex = 4;
             this.interpolationBox.TabStop = false;
             this.interpolationBox.Text = "Interpolation";
@@ -618,10 +618,11 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1220, 630);
+            this.ClientSize = new System.Drawing.Size(1154, 623);
             this.Controls.Add(this.tableLayoutPanel1);
+            this.MinimumSize = new System.Drawing.Size(700, 500);
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Hemisphere Light";
             this.tableLayoutPanel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox)).EndInit();
             this.tableLayoutPanel2.ResumeLayout(false);

@@ -1,0 +1,24 @@
+INSTRUKCJA OBSŁUGI APLIKACJI
+
+Po uruchomieniu wyświetlana zostanie półsfera z pliku "hemsiphereAVG.obj" z domyślnymi opcjami:
+- powierzchnia sfery wypełniona BIAŁYM kolorem
+- kolor światła ustawiony na kolor BIAŁY
+- parametry wyliczania koloru piksela: 
+	- kd = 0.5
+	- ks = 0.5
+	- m = 50
+- wysokość światła Z = 3
+- tryb interpolacji wektorów normalnych w wymiarze R2
+- mapa wektorów normalnych nie jest aktywna
+
+Aby zmienić parametry należy zanzaczyć odpowiednie opcje, a półsfera zostanie narysowana ze zaktualizowanymi opcjami.
+W przypadku zaznaczenia  "texture" lub "Use Normal Map" zastosowane zostaną odpowiednio tekstura z pliku "defaultTexture.png"
+oraz mapa normalna z pliku "defaultNormalMap.png". Aby zmienić którykoliwek z plików należy kliknąć "Change Sphere Texture",
+lub "Change Normal Map", a następnie wybrać plik do zastosowania.
+
+Aby zmienić kolor światła/powierzchni półsfery należy kliknąć "Change Sphere/Light Color" i wybrać kolor z okienka.
+
+Aby rozpocząć animację ruchu źródła światła należy zaznaczyć "animation active", a aby ją zatrzymać wystarczy odnaczyć tę samą opcję.
+
+UWAGI:
+- program (animacja) dziala szybciej dla mniejszego rozmiaru okna, który można zmienić przeciągając krawędź okna aplikacji. 

@@ -40,8 +40,6 @@ namespace GKProj2
 
             Id = _idProvider++;
         }
-        
-        
         // ================================= DRAWING FUNCTIONS ================================================
         public void DrawOutline(Bitmap canvas)
         {

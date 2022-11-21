@@ -8,7 +8,6 @@ using System.Xml.Linq;
 
 namespace GKProj2
 {
-
     public partial class Form1 : Form
     {
         private Bitmap canvas;
@@ -18,6 +17,7 @@ namespace GKProj2
 
         private List<Figure> figureList = new List<Figure>();
         private int elapsedTime = 0;
+
 
         public Form1()
         {
@@ -69,20 +69,19 @@ namespace GKProj2
 
             DrawAll();
         }
-
         public void DrawAll()
         {
             var sw = Stopwatch.StartNew();
             
             lockBitmapCanvas.LockBits();
-            DrawingArgs.textureLockBitmap!.LockBits();
+            if(DrawingArgs.textureDraw)DrawingArgs.textureLockBitmap!.LockBits();
             if (DrawingArgs.useNormalMap) DrawingArgs.normalMapLockBitmap!.LockBits();
             foreach (Figure f in figureList)
             {
                 f.FillTriangle(lockBitmapCanvas);
             }
             if (DrawingArgs.useNormalMap) DrawingArgs.normalMapLockBitmap!.UnlockBits();
-            DrawingArgs.textureLockBitmap!.UnlockBits();
+            if (DrawingArgs.textureDraw) DrawingArgs.textureLockBitmap!.UnlockBits();
             lockBitmapCanvas.UnlockBits();
             
             if (netCheckBox.Checked)
@@ -195,6 +194,8 @@ namespace GKProj2
 
             return new Figure(selectedVerts);
         }
+        
+        // LIGHT ANIMATION 
         private void MoveLightSource()
         {
             (double sinT,double cosT) = Math.SinCos(elapsedTime);
@@ -203,6 +204,8 @@ namespace GKProj2
             DrawingArgs.lightPosition!.X = cosT * radius;
             DrawingArgs.lightPosition!.Y = sinT * radius;
         }
+        
+        // UI EVENTS
         private void pictureBox_SizeChanged(object sender, EventArgs e)
         {
             canvas = new Bitmap(pictureBox.Size.Width, pictureBox.Size.Height);

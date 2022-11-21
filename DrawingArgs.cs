@@ -75,7 +75,6 @@ namespace GKProj2
             this.x = x; this.y = y; this.z = z;
         }
     }
-
     public struct NormalizedColor
     {
         public double r, g, b;
